@@ -1,0 +1,25 @@
+name: "Install Aikido Safe Chain"
+description: "Protect package installs from supply chain attacks using Aikido Safe Chain"
+
+inputs:
+  minimum-package-age-hours:
+    description: "Minimum package age in hours before allowing install"
+    required: false
+    default: "48"
+  logging:
+    description: "Logging level: silent, normal, or verbose"
+    required: false
+    default: "normal"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Aikido Safe Chain
+      shell: bash
+      env:
+        SAFE_CHAIN_MINIMUM_PACKAGE_AGE_HOURS: ${{ inputs.minimum-package-age-hours }}
+        SAFE_CHAIN_LOGGING: ${{ inputs.logging }}
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/AikidoSec/safe-chain/main/install-safe-chain.sh | sh -s -- --ci
+        echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
+        echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
